@@ -1,0 +1,96 @@
+---
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Ensure kernel modules present
+    # https://rancher.com/docs/rke/latest/en/os/
+      modprobe:
+        name: "{{ item.module }}"
+        state: present
+      loop:
+        - { module: 'br_netfilter'}
+        - { module: 'ip6_udp_tunnel'}
+        - { module: 'ip_set'}
+        - { module: 'ip_set_hash_ip'}
+        - { module: 'ip_set_hash_net'}
+        - { module: 'iptable_filter'}
+        - { module: 'iptable_nat'}
+        - { module: 'iptable_mangle'}
+        - { module: 'iptable_raw'}
+        - { module: 'nf_conntrack_netlink'}
+        - { module: 'nf_conntrack'}
+        - { module: 'nf_conntrack_ipv4'}
+        - { module: 'nf_defrag_ipv4'}
+        - { module: 'nf_nat'}
+        - { module: 'nf_nat_ipv4'}
+        - { module: 'nf_nat_masquerade_ipv4'}
+        - { module: 'nfnetlink'}
+        - { module: 'udp_tunnel'}
+        - { module: 'veth'}
+        - { module: 'vxlan'}
+        - { module: 'x_tables'}
+        - { module: 'xt_addrtype'}
+        - { module: 'xt_addrtype'}
+        - { module: 'xt_comment'}
+        - { module: 'xt_mark'}
+        - { module: 'xt_multiport'}
+        - { module: 'xt_nat'}
+        - { module: 'xt_recent'}
+        - { module: 'xt_set'}
+        - { module: 'xt_statistic'}
+        - { module: 'xt_tcpudp'}
+
+    - name: Apply sysctl settings
+      sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+        state: present
+        sysctl_set: yes
+
+    - name: Disable swap (required for Kubernetes)
+      block:
+        - name: Remove swap from /etc/fstab
+          lineinfile:
+            dest: /etc/fstab
+            regexp: '^.* swap .*$'
+            state: absent
+        - name: Swap off
+          command: swapoff -a
+
+    - name: Docker
+      block:
+      - name: Update and upgrade apt packages
+        apt:
+          upgrade: yes
+          update_cache: yes
+
+      - name: Install dependencies
+        apt:
+          name:
+            - apt-transport-https
+            - ca-certificates
+          state: present
+
+      - name: Add Docker GPG apt Key
+        apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+          state: present
+
+      - name: Add Docker Repository
+        apt_repository:
+          repo: deb https://download.docker.com/linux/ubuntu bionic stable
+          state: present
+          update_cache: true
+
+      - name: Install docker-ce
+        apt:
+          name: docker-ce
+          state: present
+
+      - name: Ensure Docker is started and enabled at boot.
+        service:
+          name: docker
+          state: "started"
+          enabled: "true"
