@@ -20,7 +20,7 @@ And paste that in the `Docker Registry Htpasswd Authentication` field.
 ![Registry Configuration 2](img/registry-config2.png)
 
 Enable Persistent Volume and set the volume size appropriately.  
-We chose to make the registry available only inside the cluster, so we disabled the load balancer option and set the service type to `ClusterIP`.
+We will manually add an ingress later, so we disable the load balancer option and set the service type to `ClusterIP`.
 
 Next, in your cluster dashboard, go to `Storage > Persistent Volumes`.
 
@@ -29,3 +29,60 @@ Next, in your cluster dashboard, go to `Storage > Persistent Volumes`.
 And set the size and name of the Volume to be used by the registry.
 
 ![Persistent Volume Config](img/pv.png)
+
+Next we create a `ClusterIssuer, a `cert manager` object that will issue TLS certificates from Let's Encrypt.
+
+```yaml
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  namespace: default
+spec:
+  acme:
+    email: mail@example.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+```
+
+```
+$> kubectl apply -f cluster-issuer.yml
+```
+
+And create an ingress for the registry. Fill in with the appropriate namespace and service name (in this example, `docker-regisry-p3nqs`)
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: docker-registry
+  namespace: docker-regisry-p3nqs
+  annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+  labels:
+    app: docker-registry
+spec:
+  tls:
+  - hosts:
+    - your.hostname.com
+    secretName: docker-registry-tls
+  rules:
+  - host: your.hostname.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: docker-regisry-p3nqs
+          servicePort: 5000
+```
+
+```
+$> kubectl apply -f registry-ingress.yml
+```
