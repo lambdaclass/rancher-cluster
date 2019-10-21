@@ -97,7 +97,7 @@ $> helm install \
     jetstack/cert-manager
 ```
 
-And finally, install the stable version of Rancher. You will need to provide the hostname of your load balancer and a valid email for Let's Encrypt.
+Now we install the stable version of Rancher. You will need to provide the hostname of your load balancer and a valid email for Let's Encrypt.
 
 ```
 $> helm install rancher-stable/rancher \
@@ -106,6 +106,14 @@ $> helm install rancher-stable/rancher \
     --set hostname=yourhostname.com \
     --set ingress.tls.source=letsEncrypt \
     --set letsEncrypt.email=youremail@example.org
+```
+
+Finally, we setup a load balancer to access the cluster externally; for this we use [Metallb](https://metallb.universe.tf/).
+
+```
+$> helm install stable/metallb \ 
+    --name metallb \
+    --namespace metallb
 ```
 
 Once the cluster is properly setup, follow the [guides](docs/README.md) to install the different apps.

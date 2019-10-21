@@ -30,31 +30,7 @@ And set the size and name of the Volume to be used by the registry.
 
 ![Persistent Volume Config](img/pv.png)
 
-Next we create a `ClusterIssuer, a `cert manager` object that will issue TLS certificates from Let's Encrypt.
-
-```yaml
-apiVersion: certmanager.k8s.io/v1alpha1
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-prod
-  namespace: default
-spec:
-  acme:
-    email: mail@example.com
-    server: https://acme-v02.api.letsencrypt.org/directory
-    privateKeySecretRef:
-      name: letsencrypt-prod
-    solvers:
-    - http01:
-        ingress:
-          class: nginx
-```
-
-```
-$> kubectl apply -f cluster-issuer.yml
-```
-
-And create an ingress for the registry. Fill in with the appropriate namespace and service name (in this example, `docker-regisry-p3nqs`)
+Now create an ingress for the registry. Fill in with the appropriate namespace and service name (in this example, `docker-regisry-p3nqs`)
 
 ```yaml
 apiVersion: extensions/v1beta1
