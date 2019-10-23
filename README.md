@@ -10,7 +10,7 @@
 
 ## Setup
 
-Make sure you fill in the inventory file (`ansible/inventory.ini`) with the ip of the servers that make up the cluster.
+Make sure you fill in the inventory file (`ansible/inventory.ini`) with the ip of the servers that make up the cluster. The `local_ip` variables are meant to be the ips of the local network between the nodes, they will be used by the load balancer setup below.
 
 ## Usage
 
@@ -114,6 +114,6 @@ To access the cluster externally we need a `load balancer`. There are different 
 $> make loadbalancer
 ```
 
-This will run a docker container with nginx in `node1` of the inventory file (`ansible/inventory.ini`) outside of the cluster. This means that nginx will serve requests for this specific `ip`, so fill in the inventory accordingly.
+This will run a docker container with nginx in `node1` of the inventory file (`ansible/inventory.ini`) outside of the cluster. This means that nginx will serve requests for this specific ip (the external ip of `node1`), so fill in the inventory accordingly.
 
 Once the cluster is properly setup, follow the [guides](docs/README.md) to install the different apps.
