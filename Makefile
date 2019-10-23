@@ -7,6 +7,9 @@ init: ## Create a Python virtual environment and install Ansible
 prepare: ## Prepare nodes. Install Docker, disable swap and check for required kernel modules.
 	pipenv run ansible-playbook -i ansible/inventory.ini ansible/prepare-cluster.yml --flush-cache
 
+loadbalancer: ## Setup an nginx bare-metal load balancer outside of the cluster 
+	pipenv run ansible-playbook -i ansible/inventory.ini ansible/loadbalancer.yml
+
 config: ## Create Rancher config.yml
 	rke config
 

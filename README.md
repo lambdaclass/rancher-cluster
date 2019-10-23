@@ -108,4 +108,12 @@ $> helm install rancher-stable/rancher \
     --set letsEncrypt.email=youremail@example.org
 ```
 
+To access the cluster externally we need a `load balancer`. There are different ways to do this; we will use [nginx](https://www.nginx.com/). Install it with
+
+```
+$> make loadbalancer
+```
+
+This will run a docker container with nginx in `node1` of the inventory file (`ansible/inventory.ini`) outside of the cluster. This means that nginx will serve requests for this specific `ip`, so fill in the inventory accordingly.
+
 Once the cluster is properly setup, follow the [guides](docs/README.md) to install the different apps.
