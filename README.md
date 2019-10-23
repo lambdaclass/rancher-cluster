@@ -108,12 +108,4 @@ $> helm install rancher-stable/rancher \
     --set letsEncrypt.email=youremail@example.org
 ```
 
-Finally, we setup a load balancer to access the cluster externally; for this we use [Metallb](https://metallb.universe.tf/).
-
-```
-$> helm install stable/metallb \ 
-    --name metallb \
-    --namespace metallb
-```
-
 Once the cluster is properly setup, follow the [guides](docs/README.md) to install the different apps.

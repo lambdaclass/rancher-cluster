@@ -19,7 +19,7 @@ And paste that in the `Docker Registry Htpasswd Authentication` field.
 
 ![Registry Configuration 2](img/registry-config2.png)
 
-Enable Persistent Volume and set the volume size appropriately.  
+Enable Persistent Volume and set the volume size appropriately. You will need to have set up a storage provider (see [this](storageos.md) guide) and choose the appropriate `StorageClass`.  
 We will manually add an ingress later, so we disable the load balancer option and set the service type to `ClusterIP`.
 
 Next, in your cluster dashboard, go to `Storage > Persistent Volumes`.
@@ -33,6 +33,7 @@ And set the size and name of the Volume to be used by the registry.
 Now create an ingress for the registry. Fill in with the appropriate namespace and service name (in this example, `docker-regisry-p3nqs`)
 
 ```yaml
+# registry-ingress.yml
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
