@@ -30,36 +30,45 @@ And set the size and name of the Volume to be used by the registry.
 
 ![Persistent Volume Config](img/pv.png)
 
-Now create an ingress for the registry. Fill in with the appropriate namespace and service name (in this example, `docker-regisry-p3nqs`)
+Now create an ingress for the registry. Fill in with the appropriate namespace and service name (in this example, `docker-registry-p3nqs`)
 
 ```yaml
 # registry-ingress.yml
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: docker-registry
-  namespace: docker-regisry-p3nqs
+  name: docker-registry-ingress
+  namespace: docker-registry-p3nqs
   annotations:
     certmanager.k8s.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
   labels:
     app: docker-registry
 spec:
   tls:
   - hosts:
-    - your.hostname.com
+    - registry.lambdaclass.com
     secretName: docker-registry-tls
   rules:
-  - host: your.hostname.com
+  - host: registry.lambdaclass.com
     http:
       paths:
       - path: /
         backend:
-          serviceName: docker-regisry-p3nqs
+          serviceName: docker-registry-p3nqs
           servicePort: 5000
+
 ```
 
 ```
 $> kubectl apply -f registry-ingress.yml
 ```
+
+And finally, add a private registry to you cluster by going to the `Resources > Registries` menu:
+
+![Registry Menu](img/registry-menu.png)
+
+Click `Add Registry` and fill in the configuration options:
+
+![Registry Configuration](img/private-registry-config.png)
