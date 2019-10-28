@@ -163,3 +163,9 @@ steps:
     kubernetes_cert:
       from_secret: kubernetes_certificate
 ```
+
+Jobs started by Drone will not be deleted automatically. In order to do so we apply a [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) that periodically deletes jobs older than two weeks. Keep in mind that doing so also wipes all the associated pods, completed or failed.
+
+```
+$> kubectl apply -f apps/drone/drone-cleanup.yml
+```

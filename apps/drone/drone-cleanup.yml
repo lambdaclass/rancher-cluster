@@ -1,0 +1,19 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: drone-cleanup
+  namespace: drone
+spec:
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          containers:
+          - name: drone-cleanup
+            image: lachlanevenson/k8s-kubectl
+            command: ["sh", "-c",  "kubectl get jobs -n drone | awk '$4 ~ /^[14-28]d/' | awk '{print $1}' | xargs kubectl delete job -n drone"]
+          serviceAccountName: drone-deploy
+          restartPolicy: Never
+  successfulJobsHistoryLimit: 3

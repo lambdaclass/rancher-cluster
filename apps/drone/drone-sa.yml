@@ -12,9 +12,9 @@ metadata:
   name: drone-deploy
   namespace: drone
 rules:
-  - apiGroups: ["extensions"]
-    resources: ["deployments"]
-    verbs: ["get","list","patch","update"]
+  - apiGroups: ["extensions", "batch"]
+    resources: ["deployments", "jobs"]
+    verbs: ["get","list","patch","update","delete"]
 
 ---
 
