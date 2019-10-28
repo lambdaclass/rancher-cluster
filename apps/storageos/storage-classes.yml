@@ -1,0 +1,27 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: replicated
+  annotations:
+    description: "One replica storage"
+parameters:
+  fsType: ext4
+  pool: default
+  storageos.com/replicas: "1"
+reclaimPolicy: Retain
+provisioner: storageos  
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: high-availability
+  annotations:
+    description: "Two replicas storage"
+parameters:
+  fsType: ext4
+  pool: default
+  storageos.com/replicas: "2"
+reclaimPolicy: Retain
+provisioner: storageos

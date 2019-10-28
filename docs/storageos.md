@@ -11,3 +11,9 @@ Click on `View Details` and you will be shown the configuration options. Make su
 After the app is installed, you should see a `StorageClass` named `fast` when you browse to `Storage > Storage Classes` in your cluster view page.
 
 ![StorageClass](img/storageclass.png)
+
+We will also make two `StorageClasses` for replicated volumes, to allow for dynamic volume creation with one and two replicas.
+
+```
+$> kubectl apply -f apps/storageos/storage-classes.yml
+```
