@@ -4,7 +4,7 @@ metadata:
   name: drone-cleanup
   namespace: drone
 spec:
-  schedule: "*/2 * * * *"
+  schedule: "0 19 * * 1"
   jobTemplate:
     spec:
       backoffLimit: 2
