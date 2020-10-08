@@ -6,10 +6,9 @@ log_to_slack() {
 }
 # This function will run if any of the commands fail.
 on_fail() {
-    log_to_slack "Backup failed!"
+    log_to_slack "Backup of $TARGET_DB_NAME failed!"
 }
 trap 'on_fail' ERR
 mkdir -p /postgres
 pg_dump -h "$TARGET_DB_SERVICE" -U "$TARGET_DB_USER" -w "$TARGET_DB_NAME" -f "/postgres/$FILENAME.dump"
 aws s3 cp "/postgres/$FILENAME.dump" "s3://$S3_BUCKET/backups/$FILENAME.dump"
-log_to_slack "Successful backup of $TARGET_DB_NAME db"
